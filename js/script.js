@@ -43044,15 +43044,8 @@ jsonObject = [
         }
     }
 ];
-//console.log(jsonObject[0]);
-let jsonArray = Object.entries(jsonObject);
-let stages = ['primaria[0]', 'secundaria[0]'];
-let elementaryGrades = ['primero[0]', 'segundo', 'tercero', 'cuarto', 'quinto'];
-let migHigGrades = ['sexto', 'septimo', 'octavo', 'noveno', 'decimo', 'once'];
-let courses = ['A', 'B'];
 
-//console.log(jsonObject[0].colegio.primaria);
-//console.log(jsonObject[0].colegio.primaria.length);
+
 
 function getTotalStudients(jsonObject) {
     let jsonObjectaux = jsonObject[0].colegio;
@@ -43101,10 +43094,10 @@ function getTotalBoys(jsonObject) {
                 //console.log(course);
                 //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
                 //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-                for (let students in course.estudiantes){
+                for (let students in course.estudiantes) {
                     //console.log(course.estudiantes[students]);
                     let studGender = course.estudiantes[students].genero;
-                    if (studGender == 'male'){
+                    if (studGender == 'male') {
                         totalboys++;
                     }
                 }
@@ -43133,10 +43126,10 @@ function getTotalGirls(jsonObject) {
                 //console.log(course);
                 //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
                 //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-                for (let students in course.estudiantes){
+                for (let students in course.estudiantes) {
                     //console.log(course.estudiantes[students]);
                     let studGender = course.estudiantes[students].genero;
-                    if (studGender == 'female'){
+                    if (studGender == 'female') {
                         totalGirls++;
                     }
                 }
@@ -43150,8 +43143,93 @@ function getTotalGirls(jsonObject) {
     return totalGirls;
 }
 
-console.log(getTotalStudients(jsonObject));
-console.log(getTotalStudientsByStage(jsonObject, 'primaria'));
-console.log(getTotalStudientsByStage(jsonObject, 'secundaria'));
-console.log(getTotalBoys(jsonObject));
-console.log(getTotalGirls(jsonObject));
+function getTotalBoysByStage(jsonObject, stage) {
+    let jsonObjectaux = jsonObject[0].colegio[stage][0];
+    let totalboys = 0;
+    for (let grades in jsonObjectaux) {
+        let grade = jsonObjectaux[grades];
+        //console.log(jsonObjectaux[stages][0][grades]);
+        // console.log('grade: ' + grades);
+        for (let courses in grade) {
+            let course = grade[courses];
+            //console.log(course);
+            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
+            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
+            for (let students in course.estudiantes) {
+                //console.log(course.estudiantes[students]);
+                let studGender = course.estudiantes[students].genero;
+                if (studGender == 'male') {
+                    totalboys++;
+                }
+            }
+            // console.log('course: ' + courses);
+            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
+
+            //totalStudents += jsonObjectaux[stages][0][grades][courses].estudiantes.length;
+        }
+    }
+    return totalboys;
+}
+
+function getTotalGirlsByStage(jsonObject, stage) {
+    let jsonObjectaux = jsonObject[0].colegio[stage][0];
+    let totalGirls = 0;
+    for (let grades in jsonObjectaux) {
+        let grade = jsonObjectaux[grades];
+        //console.log(jsonObjectaux[stages][0][grades]);
+        // console.log('grade: ' + grades);
+        for (let courses in grade) {
+            let course = grade[courses];
+            //console.log(course);
+            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
+            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
+            for (let students in course.estudiantes) {
+                //console.log(course.estudiantes[students]);
+                let studGender = course.estudiantes[students].genero;
+                if (studGender == 'female') {
+                    totalGirls++;
+                }
+            }
+            // console.log('course: ' + courses);
+            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
+
+            //totalStudents += jsonObjectaux[stages][0][grades][courses].estudiantes.length;
+        }
+    }
+    return totalGirls;
+}
+
+console.log(`Cantidad de estudiantes que hay en el colegio: ${getTotalStudients(jsonObject)}`);
+console.log(`Cantidad de estudiantes que hay en primaria: ${getTotalStudientsByStage(jsonObject, 'primaria')}`);
+console.log(`Cantidad de estudiantes que hay en secundaria: ${getTotalStudientsByStage(jsonObject, 'secundaria')}`);
+console.log(`Cantidad de niños que hay en el colegio: ${getTotalBoys(jsonObject)}`);
+console.log(`Cantidad de niñas que hay en el colegio: ${getTotalGirls(jsonObject)}`);
+console.log(`Cantidad de niños que hay en primaria: ${getTotalBoysByStage(jsonObject, 'primaria')}`);
+console.log(`Cantidad de niñas que hay en primaria: ${getTotalGirlsByStage(jsonObject, 'primaria')}`);
+console.log(`Cantidad de niños que hay en secundaria: ${getTotalBoysByStage(jsonObject, 'secundaria')}`);
+console.log(`Cantidad de niñas que hay en secundaria: ${getTotalGirlsByStage(jsonObject, 'secundaria')}`);
+//console.log(`Media de las notas en el colegio: ${}`);
+
+/*
+La media de las notas en el bachillerato.
+La media de las notas en el primaria.
+La media de las notas de un grado seleccionado por parametro.
+La media de las notas de un curso seleccionado por parametro.
+La moda de las notas en el colegio.
+La moda de las notas en el bachillerato.
+La moda de las notas en el primaria.
+La moda de las notas de un grado seleccionado por parametro.
+La moda de las notas de un curso seleccionado por parametro.
+La mediana de las notas en el colegio.
+La mediana de las notas en el bachillerato.
+La mediana de las notas en el primaria.
+La mediana de las notas de un grado seleccionado por parametro.
+La mediana de las notas de un curso seleccionado por parametro.
+Seleccionar el estudiante con mejor nota en promedio en cada materia.
+Seleccionar el estudiante con mejor nota en promedio en el curso.
+Seleccionar el estudiante con mejor nota en promedio en el grado.
+Seleccionar el estudiante con mejor nota en promedio en primaria.
+Seleccionar el estudiante con mejor nota en promedio en bachillerato.
+Seleccionar el estudiante con mejor nota en promedio en el colegio.
+Buscar un estudiante que pertenezca a un grado seleccionado por parametro.
+*/
