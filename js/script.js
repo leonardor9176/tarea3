@@ -43048,16 +43048,12 @@ jsonObject = [
 
 
 function getTotalStudients(jsonObject) {
-    let jsonObjectaux = jsonObject[0].colegio;
+    let jsonObjectCopy = jsonObject[0].colegio;
     let totalStudents = 0;
-    for (let stages in jsonObjectaux) {
-        // console.log('stage :' + stages);
-        for (let grades in jsonObjectaux[stages][0]) {
-            // console.log('grade: ' + grades);
-            for (let courses in jsonObjectaux[stages][0][grades]) {
-                // console.log('course: ' + courses);
-                // console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-                totalStudents += jsonObjectaux[stages][0][grades][courses].estudiantes.length;
+    for (let stages in jsonObjectCopy) {
+        for (let grades in jsonObjectCopy[stages][0]) {
+            for (let courses in jsonObjectCopy[stages][0][grades]) {
+                totalStudents += jsonObjectCopy[stages][0][grades][courses].estudiantes.length;
             }
         }
     }
@@ -43065,78 +43061,52 @@ function getTotalStudients(jsonObject) {
 }
 
 function getTotalStudientsByStage(jsonObject, stage) {
-    let jsonObjectaux = jsonObject[0].colegio[stage][0];
-    // console.log(jsonObjectaux)
+    let jsonObjectCopy = jsonObject[0].colegio[stage][0];
     let totalStudents = 0;
-    for (let grades in jsonObjectaux) {
-        // console.log('grade: ' + grades);
-        for (let courses in jsonObjectaux[grades]) {
-            // console.log('course: ' + courses);
-            // console.log(jsonObjectaux[grades][courses].estudiantes);
-            totalStudents += jsonObjectaux[grades][courses].estudiantes.length;
+    for (let grades in jsonObjectCopy) {
+        for (let courses in jsonObjectCopy[grades]) {
+            totalStudents += jsonObjectCopy[grades][courses].estudiantes.length;
         }
     }
     return totalStudents;
 }
 
 function getTotalBoys(jsonObject) {
-    let jsonObjectaux = jsonObject[0].colegio;
-    let totalboys = 0;
-    for (let stages in jsonObjectaux) {
-        let stage = jsonObjectaux[stages][0];
-        // console.log('stage :' + stages);
+    let jsonObjectCopy = jsonObject[0].colegio;
+    let totalBoys = 0;
+    for (let stages in jsonObjectCopy) {
+        let stage = jsonObjectCopy[stages][0];
         for (let grades in stage) {
             let grade = stage[grades];
-            //console.log(jsonObjectaux[stages][0][grades]);
-            // console.log('grade: ' + grades);
             for (let courses in grade) {
                 let course = grade[courses];
-                //console.log(course);
-                //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-                //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
                 for (let students in course.estudiantes) {
-                    //console.log(course.estudiantes[students]);
                     let studGender = course.estudiantes[students].genero;
                     if (studGender == 'male') {
-                        totalboys++;
+                        totalBoys++;
                     }
                 }
-                // console.log('course: ' + courses);
-                //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-
-                //totalStudents += jsonObjectaux[stages][0][grades][courses].estudiantes.length;
             }
         }
     }
-    return totalboys;
+    return totalBoys;
 }
 
 function getTotalGirls(jsonObject) {
-    let jsonObjectaux = jsonObject[0].colegio;
+    let jsonObjectCopy = jsonObject[0].colegio;
     let totalGirls = 0;
-    for (let stages in jsonObjectaux) {
-        let stage = jsonObjectaux[stages][0];
-        // console.log('stage :' + stages);
+    for (let stages in jsonObjectCopy) {
+        let stage = jsonObjectCopy[stages][0];
         for (let grades in stage) {
             let grade = stage[grades];
-            //console.log(jsonObjectaux[stages][0][grades]);
-            // console.log('grade: ' + grades);
             for (let courses in grade) {
                 let course = grade[courses];
-                //console.log(course);
-                //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-                //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
                 for (let students in course.estudiantes) {
-                    //console.log(course.estudiantes[students]);
                     let studGender = course.estudiantes[students].genero;
                     if (studGender == 'female') {
                         totalGirls++;
                     }
                 }
-                // console.log('course: ' + courses);
-                //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-
-                //totalStudents += jsonObjectaux[stages][0][grades][courses].estudiantes.length;
             }
         }
     }
@@ -43144,59 +43114,254 @@ function getTotalGirls(jsonObject) {
 }
 
 function getTotalBoysByStage(jsonObject, stage) {
-    let jsonObjectaux = jsonObject[0].colegio[stage][0];
-    let totalboys = 0;
-    for (let grades in jsonObjectaux) {
-        let grade = jsonObjectaux[grades];
-        //console.log(jsonObjectaux[stages][0][grades]);
-        // console.log('grade: ' + grades);
+    let jsonObjectCopy = jsonObject[0].colegio[stage][0];
+    let totalBoys = 0;
+    for (let grades in jsonObjectCopy) {
+        let grade = jsonObjectCopy[grades];
         for (let courses in grade) {
             let course = grade[courses];
-            //console.log(course);
-            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
             for (let students in course.estudiantes) {
-                //console.log(course.estudiantes[students]);
                 let studGender = course.estudiantes[students].genero;
                 if (studGender == 'male') {
-                    totalboys++;
+                    totalBoys++;
                 }
             }
-            // console.log('course: ' + courses);
-            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-
-            //totalStudents += jsonObjectaux[stages][0][grades][courses].estudiantes.length;
         }
     }
-    return totalboys;
+    return totalBoys;
 }
 
 function getTotalGirlsByStage(jsonObject, stage) {
-    let jsonObjectaux = jsonObject[0].colegio[stage][0];
+    let jsonObjectCopy = jsonObject[0].colegio[stage][0];
     let totalGirls = 0;
-    for (let grades in jsonObjectaux) {
-        let grade = jsonObjectaux[grades];
-        //console.log(jsonObjectaux[stages][0][grades]);
-        // console.log('grade: ' + grades);
+    for (let grades in jsonObjectCopy) {
+        let grade = jsonObjectCopy[grades];
         for (let courses in grade) {
             let course = grade[courses];
-            //console.log(course);
-            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
             for (let students in course.estudiantes) {
-                //console.log(course.estudiantes[students]);
                 let studGender = course.estudiantes[students].genero;
                 if (studGender == 'female') {
                     totalGirls++;
                 }
             }
-            // console.log('course: ' + courses);
-            //console.log(jsonObjectaux[stages][0][grades][courses].estudiantes);
-
-            //totalStudents += jsonObjectaux[stages][0][grades][courses].estudiantes.length;
         }
     }
     return totalGirls;
+}
+
+function getScores(jsonObject, stage, grade, course) {
+    let scores = [];
+    if (stage == undefined && grade == undefined) {
+        if (course == undefined) {
+            let jsonObjectCopy = jsonObject[0].colegio;
+            for (let stages in jsonObjectCopy) {
+                let stage = jsonObjectCopy[stages][0];
+                for (let grades in stage) {
+                    let grade = stage[grades];
+                    for (let courses in grade) {
+                        let course = grade[courses];
+                        for (let students in course.estudiantes) {
+                            let student = course.estudiantes[students];
+                            for (let subjects in student.asignaturas) {
+                                let subject = student.asignaturas[subjects];
+                                for (let terms in subject) {
+                                    scores.push(subject[terms].primerCorte);
+                                    scores.push(subject[terms].segundoCorte);
+                                    scores.push(subject[terms].tercerCorte);
+                                    scores.push(subject[terms].cuartoCorte);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            let jsonObjectCopy = jsonObject[0].colegio;
+            for (let stages in jsonObjectCopy) {
+                let stage = jsonObjectCopy[stages][0];
+                for (let grades in stage) {
+                    let courses = stage[grades][course];
+                    for (students in courses.estudiantes) {
+                        let student = courses.estudiantes[students];
+                        for (let subjects in student.asignaturas) {
+                            let subject = student.asignaturas[subjects];
+                            for (let terms in subject) {
+                                scores.push(subject[terms].primerCorte);
+                                scores.push(subject[terms].segundoCorte);
+                                scores.push(subject[terms].tercerCorte);
+                                scores.push(subject[terms].cuartoCorte);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else {
+        if (grade == undefined) {
+            let jsonObjectCopy = jsonObject[0].colegio[stage][0];
+            for (let grades in jsonObjectCopy) {
+                let grade = jsonObjectCopy[grades];
+                for (let courses in grade) {
+                    let course = grade[courses];
+                    for (let students in course.estudiantes) {
+                        let student = course.estudiantes[students];
+                        for (let subjects in student.asignaturas) {
+                            let subject = student.asignaturas[subjects];
+                            for (let terms in subject) {
+                                scores.push(subject[terms].primerCorte);
+                                scores.push(subject[terms].segundoCorte);
+                                scores.push(subject[terms].tercerCorte);
+                                scores.push(subject[terms].cuartoCorte);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            let jsonObjectCopy = jsonObject[0].colegio[stage][0][grade];
+            for (let courses in jsonObjectCopy) {
+                let course = jsonObjectCopy[courses];
+                for (let students in course.estudiantes) {
+                    let student = course.estudiantes[students];
+                    for (let subjects in student.asignaturas) {
+                        let subject = student.asignaturas[subjects];
+                        for (let terms in subject) {
+                            scores.push(subject[terms].primerCorte);
+                            scores.push(subject[terms].segundoCorte);
+                            scores.push(subject[terms].tercerCorte);
+                            scores.push(subject[terms].cuartoCorte);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    scores.sort();
+    return scores
+}
+
+function getMean(jsonObject, stage) {
+    let scores = getScores(jsonObject, stage);
+    let accrualScores = 0;
+    let mean;
+    for (let i = 0; i < scores.length; i++) {
+        accrualScores += scores[i];
+    }
+    mean = accrualScores / scores.length;
+    return mean
+}
+
+function getMeanByGrade(jsonObject, grade) {
+    let scores;
+    let accrualScores = 0;
+    let mean;
+    if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
+        scores = getScores(jsonObject, 'primaria', grade);
+    }
+    else {
+        if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
+            scores = getScores(jsonObject, 'secundaria', grade);
+        }
+        else {
+            return String(`El grado ${grade} no existe.`);
+            scores = getScores(jsonObject, 'secundaria', grade);
+        }
+    }
+    for (let i = 0; i < scores.length; i++) {
+        accrualScores += scores[i];
+    }
+    mean = accrualScores / scores.length;
+    return mean
+}
+
+function getMeanByCourse(jsonObject, course) {
+    let scores;
+    let accrualScores = 0;
+    let mean;
+    if (course == 'A' || course == 'B') {
+        if (course == 'A') {
+            scores = getScores(jsonObject, undefined, undefined, 0);
+        }
+        else {
+            scores = getScores(jsonObject, undefined, undefined, 1);
+        }
+    }
+    else {
+        return String(`El curso ${grade} no existe.`);
+    }
+
+    for (let i = 0; i < scores.length; i++) {
+        accrualScores += scores[i];
+    }
+    mean = accrualScores / scores.length;
+    return mean
+}
+
+function getMode(jsonObject, stage, grade, course) {
+    let mode = 0;
+    let modeRepetitions = 0;
+    let currentScore = 0;
+    let currentScoreRepetitons = 0;
+    let scores = [];
+
+    if (grade == undefined && course == undefined) {
+        scores = getScores(jsonObject, stage);
+    }
+    else {
+        if (grade != undefined) {
+            if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
+                scores = getScores(jsonObject, 'primaria', grade);
+            }
+            else {
+                if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
+                    scores = getScores(jsonObject, 'secundaria', grade);
+                }
+                else {
+                    return String(`El grado ${grade} no existe.`);
+                    scores = getScores(jsonObject, 'secundaria', grade);
+                }
+            }
+        }
+        else {
+            if (course != undefined) {
+                if (course == 'A' || course == 'B') {
+                    if (course == 'A') {
+                        scores = getScores(jsonObject, undefined, undefined, 0);
+                    }
+                    else {
+                        scores = getScores(jsonObject, undefined, undefined, 1);
+                    }
+                }
+                else {
+                    return String(`El curso ${grade} no existe.`);
+                }
+            }
+        }
+    }
+
+    currentScore = scores[0];
+    currentScoreRepetitons = 1;
+    for (let i = 1; i < scores.length; i++) {
+        if (scores[i] == currentScore) {
+            currentScoreRepetitons++;
+            if (currentScoreRepetitons > modeRepetitions) {
+                mode = scores[i];
+                modeRepetitions = currentScoreRepetitons;
+            }
+        }
+        else {
+            currentScore = scores[i];
+            currentScoreRepetitons = 1;
+            if (currentScoreRepetitons > modeRepetitions) {
+                mode = scores[i];
+                modeRepetitions = currentScoreRepetitons;
+            }
+        }
+    }
+    return mode;
 }
 
 console.log(`Cantidad de estudiantes que hay en el colegio: ${getTotalStudients(jsonObject)}`);
@@ -43208,23 +43373,27 @@ console.log(`Cantidad de niños que hay en primaria: ${getTotalBoysByStage(jsonO
 console.log(`Cantidad de niñas que hay en primaria: ${getTotalGirlsByStage(jsonObject, 'primaria')}`);
 console.log(`Cantidad de niños que hay en secundaria: ${getTotalBoysByStage(jsonObject, 'secundaria')}`);
 console.log(`Cantidad de niñas que hay en secundaria: ${getTotalGirlsByStage(jsonObject, 'secundaria')}`);
-//console.log(`Media de las notas en el colegio: ${}`);
+console.log(`Media de las notas en el colegio: ${getMean(jsonObject)}`);
+console.log(`Media de las notas en primaria: ${getMean(jsonObject, 'primaria')}`);
+console.log(`Media de las notas en secundaria: ${getMean(jsonObject, 'secundaria')}`);
+console.log(`Media de las notas en grado primero: ${getMeanByGrade(jsonObject, 'primero')}`);
+console.log(`Media de las notas en curso A: ${getMeanByCourse(jsonObject, 'A')}`);
+console.log(`Moda de las notas en el colegio: ${getMode(jsonObject)}`);
+console.log(`Moda de las notas en primaria: ${getMode(jsonObject, 'primaria')}`);
+console.log(`Moda de las notas en secundaria: ${getMode(jsonObject, 'secundaria')}`);
+console.log(`Moda de las notas en en curso primero: ${getMode(jsonObject, undefined, 'primero')}`);
+console.log(`Moda de las notas en en grado A: ${getMode(jsonObject, undefined, undefined, 'A')}`);
 
 /*
-La media de las notas en el bachillerato.
-La media de las notas en el primaria.
-La media de las notas de un grado seleccionado por parametro.
-La media de las notas de un curso seleccionado por parametro.
-La moda de las notas en el colegio.
-La moda de las notas en el bachillerato.
-La moda de las notas en el primaria.
-La moda de las notas de un grado seleccionado por parametro.
-La moda de las notas de un curso seleccionado por parametro.
-La mediana de las notas en el colegio.
-La mediana de las notas en el bachillerato.
-La mediana de las notas en el primaria.
-La mediana de las notas de un grado seleccionado por parametro.
-La mediana de las notas de un curso seleccionado por parametro.
+
+console.log(`Mediana de las notas en el colegio: ${}`);
+console.log(`Mediana de las notas en primaria: ${}`);
+console.log(`Mediana de las notas en secundaria: ${}`);
+console.log(`Mediana de las notas en en curso x: ${}`);
+console.log(`Mediana de las notas en en grado x: ${}`);
+
+
+
 Seleccionar el estudiante con mejor nota en promedio en cada materia.
 Seleccionar el estudiante con mejor nota en promedio en el curso.
 Seleccionar el estudiante con mejor nota en promedio en el grado.
