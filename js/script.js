@@ -43364,6 +43364,142 @@ function getMode(jsonObject, stage, grade, course) {
     return mode;
 }
 
+function getMedian(jsonObject, stage, grade, course) {
+    let middleIndex = 0;
+    median = 0;
+    if (grade == undefined && course == undefined) {
+        scores = getScores(jsonObject, stage);
+    }
+    else {
+        if (grade != undefined) {
+            if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
+                scores = getScores(jsonObject, 'primaria', grade);
+            }
+            else {
+                if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
+                    scores = getScores(jsonObject, 'secundaria', grade);
+                }
+                else {
+                    return String(`El grado ${grade} no existe.`);
+                    scores = getScores(jsonObject, 'secundaria', grade);
+                }
+            }
+        }
+        else {
+            if (course != undefined) {
+                if (course == 'A' || course == 'B') {
+                    if (course == 'A') {
+                        scores = getScores(jsonObject, undefined, undefined, 0);
+                    }
+                    else {
+                        scores = getScores(jsonObject, undefined, undefined, 1);
+                    }
+                }
+                else {
+                    return String(`El curso ${grade} no existe.`);
+                }
+            }
+        }
+    }
+    if (scores.length % 2 == 1) {
+        middleIndex = (scores.length - 1) / 2;
+        median = scores[middleIndex];
+    }
+    else {
+        middleIndex = (scores.length / 2) - 1;
+        median = (scores[middleIndex] + scores[middleIndex + 1]) / 2;
+    }
+    return median;
+}
+function getMeanScoresBySubject() {
+    let bestScoresBySubject = [];
+    let topStudents = [];
+
+    function calcScore(term1, term2, term3, term4) {
+        let accrual = term1 + term2 + term3 + term4;
+        score = accrual / 4;
+        return score;
+    }
+    function searchBestScoresBySubject(bestScoresBySubject, subjectSearched) {
+        let subjectIndex = element => element.subject == subjectSearched;
+        let searchedIndex = bestScoresBySubject.findIndex(subjectIndex);
+        if (searchedIndex == undefined) {
+            return -1;
+        }
+        else {
+            return searchedIndex;
+        }
+    }
+    function compareScores(bestScoresBySubject, subjectSearched, scoreSearched, sName, sGrade, sCourse) {
+        let indexBest = searchBestScoresBySubject(bestScoresBySubject, subjectSearched);
+        //console.log(indexBest);
+        if (indexBest == -1) {
+            bestScoresBySubject.push({ subject: subjectSearched, score: scoreSearched });
+            topStudents.push({ name: sName, grade: sGrade, course: sCourse, subject: subjectSearched, score: scoreSearched });
+        }
+        else {
+            if (bestScoresBySubject[indexBest].score < scoreSearched) {
+                //console.log(bestScoresBySubject[indexBest].score);
+                bestScoresBySubject[indexBest] = { subject: subjectSearched, score: scoreSearched };
+                topStudents[indexBest] = { name: sName, grade: sGrade, course: sCourse, subject: subjectSearched, score: scoreSearched };
+            }
+        }
+
+    }
+    let jsonObjectCopy = jsonObject[0].colegio;
+    for (let stages in jsonObjectCopy) {
+        let stage = jsonObjectCopy[stages][0];
+        for (let grades in stage) {
+            let grade = stage[grades];
+            for (let courses in grade) {
+                let course = grade[courses];
+                for (let students in course.estudiantes) {
+                    let student = course.estudiantes[students];
+                    for (let subjects in student.asignaturas) {
+                        let subject = student.asignaturas[subjects];
+                        for (let terms in subject) {
+                            let s1 = subject[terms].primerCorte;
+                            let s2 = subject[terms].segundoCorte;
+                            let s3 = subject[terms].tercerCorte;
+                            let s4 = subject[terms].cuartoCorte;
+                            //console.log(s1);
+                            let score = calcScore(s1, s2, s3, s4);
+                            compareScores(bestScoresBySubject, terms, score, student.nombre, grades, grade[courses].curso)
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+    console.log(topStudents);
+    return topStudents;
+}
+function showStudent(jsonObject, grade){
+    function getRandom(max){
+        return Math.round(Math.random()*max);
+    }
+
+    if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
+        stage = 'primaria';
+    }
+    else {
+        if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
+            stage = 'secundaria';
+        }
+        else {
+            return String(`El grado ${grade} no existe.`);
+        }
+    }
+    let course = getRandom(1);
+    let student = getRandom(jsonObject[0].colegio[stage][0][grade][course].estudiantes.length - 1);
+    
+    return jsonObject[0].colegio[stage][0][grade][course].estudiantes[student];
+}
+
+
+
+
 console.log(`Cantidad de estudiantes que hay en el colegio: ${getTotalStudients(jsonObject)}`);
 console.log(`Cantidad de estudiantes que hay en primaria: ${getTotalStudientsByStage(jsonObject, 'primaria')}`);
 console.log(`Cantidad de estudiantes que hay en secundaria: ${getTotalStudientsByStage(jsonObject, 'secundaria')}`);
@@ -43383,22 +43519,10 @@ console.log(`Moda de las notas en primaria: ${getMode(jsonObject, 'primaria')}`)
 console.log(`Moda de las notas en secundaria: ${getMode(jsonObject, 'secundaria')}`);
 console.log(`Moda de las notas en en curso primero: ${getMode(jsonObject, undefined, 'primero')}`);
 console.log(`Moda de las notas en en grado A: ${getMode(jsonObject, undefined, undefined, 'A')}`);
-
-/*
-
-console.log(`Mediana de las notas en el colegio: ${}`);
-console.log(`Mediana de las notas en primaria: ${}`);
-console.log(`Mediana de las notas en secundaria: ${}`);
-console.log(`Mediana de las notas en en curso x: ${}`);
-console.log(`Mediana de las notas en en grado x: ${}`);
-
-
-
-Seleccionar el estudiante con mejor nota en promedio en cada materia.
-Seleccionar el estudiante con mejor nota en promedio en el curso.
-Seleccionar el estudiante con mejor nota en promedio en el grado.
-Seleccionar el estudiante con mejor nota en promedio en primaria.
-Seleccionar el estudiante con mejor nota en promedio en bachillerato.
-Seleccionar el estudiante con mejor nota en promedio en el colegio.
-Buscar un estudiante que pertenezca a un grado seleccionado por parametro.
-*/
+console.log(`Mediana de las notas en el colegio: ${getMedian(jsonObject)}`);
+console.log(`Mediana de las notas en primaria: ${getMedian(jsonObject, 'primaria')}`);
+console.log(`Mediana de las notas en secundaria: ${getMedian(jsonObject, 'secundaria')}`);
+console.log(`Mediana de las notas en en curso x: ${getMedian(jsonObject, undefined, 'primero')}`);
+console.log(`Mediana de las notas en en grado x: ${getMedian(jsonObject, undefined, undefined, 'A')}`);
+console.log(`Estudiantes con mejor nota en promedio en cada materia: `, getMeanScoresBySubject(jsonObject));
+console.log(`Estudiante que pertezca a grado segundo: `, showStudent(jsonObject, 'segundo'));
