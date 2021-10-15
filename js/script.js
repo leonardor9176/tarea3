@@ -1,4 +1,4 @@
-jsonObject = [
+schoolJson = [
     {
         "colegio": {
             "primaria": [
@@ -43043,486 +43043,837 @@ jsonObject = [
             ]
         }
     }
-];
+]
 
 
-
-function getTotalStudients(jsonObject) {
-    let jsonObjectCopy = jsonObject[0].colegio;
+function countStudents(jsonObject, levelWanted, genderWanted) {
+    let includeElementary = false;
+    let includeMidHig = false;
+    let readParameter = false;
     let totalStudents = 0;
-    for (let stages in jsonObjectCopy) {
-        for (let grades in jsonObjectCopy[stages][0]) {
-            for (let courses in jsonObjectCopy[stages][0][grades]) {
-                totalStudents += jsonObjectCopy[stages][0][grades][courses].estudiantes.length;
+    if (levelWanted == 'colegio' || levelWanted == undefined) {
+        includeElementary = true;
+        includeMidHig = true;
+        readParameter = true;
+    }
+    else if (levelWanted == 'primaria') {
+        includeElementary = true;
+        readParameter = true;
+    }
+    else if (levelWanted == 'secundaria') {
+        includeMidHig = true;
+        readParameter = true;
+    }
+    if (['niños', 'niñas', undefined].includes(genderWanted)) {
+        readParameter *= 1;
+        if (genderWanted == 'niños') {
+            genderWanted = 'male';
+        }
+        else if (genderWanted == 'niñas') {
+            genderWanted = 'female';
+        }
+    }
+    else {
+        readParameter = false;
+    }
+    if (readParameter) {
+        let arrayKeys;
+        if (includeElementary) {
+            let elementaryJson = jsonObject[0].colegio.primaria[0];
+            arrayKeys = Object.keys(elementaryJson);
+            let elementaryDictionary = new Map();
+            for (let i = 0; i < arrayKeys.length; i++) {
+                elementaryDictionary.set(i, arrayKeys[i]);
             }
-        }
-    }
-    return totalStudents;
-}
-
-function getTotalStudientsByStage(jsonObject, stage) {
-    let jsonObjectCopy = jsonObject[0].colegio[stage][0];
-    let totalStudents = 0;
-    for (let grades in jsonObjectCopy) {
-        for (let courses in jsonObjectCopy[grades]) {
-            totalStudents += jsonObjectCopy[grades][courses].estudiantes.length;
-        }
-    }
-    return totalStudents;
-}
-
-function getTotalBoys(jsonObject) {
-    let jsonObjectCopy = jsonObject[0].colegio;
-    let totalBoys = 0;
-    for (let stages in jsonObjectCopy) {
-        let stage = jsonObjectCopy[stages][0];
-        for (let grades in stage) {
-            let grade = stage[grades];
-            for (let courses in grade) {
-                let course = grade[courses];
-                for (let students in course.estudiantes) {
-                    let studGender = course.estudiantes[students].genero;
-                    if (studGender == 'male') {
-                        totalBoys++;
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (genderWanted == undefined) {
+                    totalStudents += elementaryJson[elementaryDictionary.get(grade)][0].estudiantes.length;
+                    totalStudents += elementaryJson[elementaryDictionary.get(grade)][1].estudiantes.length;
+                }
+                else {
+                    let arrayStudentsA = elementaryJson[elementaryDictionary.get(grade)][0].estudiantes;
+                    let arrayStudentsB = elementaryJson[elementaryDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        if (arrayStudentsA[studentsIter].genero == genderWanted) {
+                            totalStudents++;
+                        }
+                    }
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        if (arrayStudentsB[studentsIter].genero == genderWanted) {
+                            totalStudents++;
+                        }
                     }
                 }
             }
         }
-    }
-    return totalBoys;
-}
-
-function getTotalGirls(jsonObject) {
-    let jsonObjectCopy = jsonObject[0].colegio;
-    let totalGirls = 0;
-    for (let stages in jsonObjectCopy) {
-        let stage = jsonObjectCopy[stages][0];
-        for (let grades in stage) {
-            let grade = stage[grades];
-            for (let courses in grade) {
-                let course = grade[courses];
-                for (let students in course.estudiantes) {
-                    let studGender = course.estudiantes[students].genero;
-                    if (studGender == 'female') {
-                        totalGirls++;
+        if (includeMidHig) {
+            let migHigJson = jsonObject[0].colegio.secundaria[0];
+            arrayKeys = Object.keys(migHigJson);
+            let midHigDictionary = new Map();
+            for (let i = 0; i < arrayKeys.length; i++) {
+                midHigDictionary.set(i, arrayKeys[i]);
+            }
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (genderWanted == undefined) {
+                    totalStudents += migHigJson[midHigDictionary.get(grade)][0].estudiantes.length;
+                    totalStudents += migHigJson[midHigDictionary.get(grade)][1].estudiantes.length;
+                }
+                else {
+                    let arrayStudentsA = migHigJson[midHigDictionary.get(grade)][0].estudiantes;
+                    let arrayStudentsB = migHigJson[midHigDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        if (arrayStudentsA[studentsIter].genero == genderWanted) {
+                            totalStudents++;
+                        }
+                    }
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        if (arrayStudentsB[studentsIter].genero == genderWanted) {
+                            totalStudents++;
+                        }
                     }
                 }
             }
         }
+        return totalStudents
     }
-    return totalGirls;
+    else {
+        return undefined;
+    }
 }
 
-function getTotalBoysByStage(jsonObject, stage) {
-    let jsonObjectCopy = jsonObject[0].colegio[stage][0];
-    let totalBoys = 0;
-    for (let grades in jsonObjectCopy) {
-        let grade = jsonObjectCopy[grades];
-        for (let courses in grade) {
-            let course = grade[courses];
-            for (let students in course.estudiantes) {
-                let studGender = course.estudiantes[students].genero;
-                if (studGender == 'male') {
-                    totalBoys++;
-                }
-            }
-        }
-    }
-    return totalBoys;
-}
-
-function getTotalGirlsByStage(jsonObject, stage) {
-    let jsonObjectCopy = jsonObject[0].colegio[stage][0];
-    let totalGirls = 0;
-    for (let grades in jsonObjectCopy) {
-        let grade = jsonObjectCopy[grades];
-        for (let courses in grade) {
-            let course = grade[courses];
-            for (let students in course.estudiantes) {
-                let studGender = course.estudiantes[students].genero;
-                if (studGender == 'female') {
-                    totalGirls++;
-                }
-            }
-        }
-    }
-    return totalGirls;
-}
-
-function getScores(jsonObject, stage, grade, course) {
+function getScores(jsonObject, levelWanted) {
+    let includeElementary = false;
+    let includeMidHig = false;
+    let readParameter = false;
+    let limitOneGrade = false;
+    let includeA = true;
+    let includeB = true;
     let scores = [];
-    if (stage == undefined && grade == undefined) {
-        if (course == undefined) {
-            let jsonObjectCopy = jsonObject[0].colegio;
-            for (let stages in jsonObjectCopy) {
-                let stage = jsonObjectCopy[stages][0];
-                for (let grades in stage) {
-                    let grade = stage[grades];
-                    for (let courses in grade) {
-                        let course = grade[courses];
-                        for (let students in course.estudiantes) {
-                            let student = course.estudiantes[students];
-                            for (let subjects in student.asignaturas) {
-                                let subject = student.asignaturas[subjects];
-                                for (let terms in subject) {
-                                    scores.push(subject[terms].primerCorte);
-                                    scores.push(subject[terms].segundoCorte);
-                                    scores.push(subject[terms].tercerCorte);
-                                    scores.push(subject[terms].cuartoCorte);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            let jsonObjectCopy = jsonObject[0].colegio;
-            for (let stages in jsonObjectCopy) {
-                let stage = jsonObjectCopy[stages][0];
-                for (let grades in stage) {
-                    let courses = stage[grades][course];
-                    for (students in courses.estudiantes) {
-                        let student = courses.estudiantes[students];
-                        for (let subjects in student.asignaturas) {
-                            let subject = student.asignaturas[subjects];
-                            for (let terms in subject) {
-                                scores.push(subject[terms].primerCorte);
-                                scores.push(subject[terms].segundoCorte);
-                                scores.push(subject[terms].tercerCorte);
-                                scores.push(subject[terms].cuartoCorte);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    if (levelWanted == 'colegio' || levelWanted == undefined) {
+        includeElementary = true;
+        includeMidHig = true;
+        readParameter = true;
     }
-    else {
-        if (grade == undefined) {
-            let jsonObjectCopy = jsonObject[0].colegio[stage][0];
-            for (let grades in jsonObjectCopy) {
-                let grade = jsonObjectCopy[grades];
-                for (let courses in grade) {
-                    let course = grade[courses];
-                    for (let students in course.estudiantes) {
-                        let student = course.estudiantes[students];
-                        for (let subjects in student.asignaturas) {
-                            let subject = student.asignaturas[subjects];
-                            for (let terms in subject) {
-                                scores.push(subject[terms].primerCorte);
-                                scores.push(subject[terms].segundoCorte);
-                                scores.push(subject[terms].tercerCorte);
-                                scores.push(subject[terms].cuartoCorte);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            let jsonObjectCopy = jsonObject[0].colegio[stage][0][grade];
-            for (let courses in jsonObjectCopy) {
-                let course = jsonObjectCopy[courses];
-                for (let students in course.estudiantes) {
-                    let student = course.estudiantes[students];
-                    for (let subjects in student.asignaturas) {
-                        let subject = student.asignaturas[subjects];
-                        for (let terms in subject) {
-                            scores.push(subject[terms].primerCorte);
-                            scores.push(subject[terms].segundoCorte);
-                            scores.push(subject[terms].tercerCorte);
-                            scores.push(subject[terms].cuartoCorte);
-                        }
-                    }
-                }
-            }
-        }
+    else if (levelWanted == 'primaria') {
+        includeElementary = true;
+        readParameter = true;
     }
-    scores.sort();
-    return scores
-}
-
-function getMean(jsonObject, stage) {
-    let scores = getScores(jsonObject, stage);
-    let accrualScores = 0;
-    let mean;
-    for (let i = 0; i < scores.length; i++) {
-        accrualScores += scores[i];
+    else if (levelWanted == 'secundaria') {
+        includeMidHig = true;
+        readParameter = true;
     }
-    mean = accrualScores / scores.length;
-    return mean
-}
-
-function getMeanByGrade(jsonObject, grade) {
-    let scores;
-    let accrualScores = 0;
-    let mean;
-    if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
-        scores = getScores(jsonObject, 'primaria', grade);
+    else if (['primero', 'segundo', 'tercero', 'cuarto', 'quinto'].includes(levelWanted)) {
+        includeElementary = true;
+        limitOneGrade = true;
+        readParameter = true;
     }
-    else {
-        if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
-            scores = getScores(jsonObject, 'secundaria', grade);
-        }
-        else {
-            return String(`El grado ${grade} no existe.`);
-            scores = getScores(jsonObject, 'secundaria', grade);
-        }
+    else if (['sexto', 'septimo', 'octavo', 'noveno', 'decimo', 'once'].includes(levelWanted)) {
+        includeMidHig = true;
+        limitOneGrade = true;
+        readParameter = true;
     }
-    for (let i = 0; i < scores.length; i++) {
-        accrualScores += scores[i];
+    else if (levelWanted.toLowerCase() == 'a') {
+        includeElementary = true;
+        includeMidHig = true;
+        includeB = false;
+        readParameter = true;
     }
-    mean = accrualScores / scores.length;
-    return mean
-}
-
-function getMeanByCourse(jsonObject, course) {
-    let scores;
-    let accrualScores = 0;
-    let mean;
-    if (course == 'A' || course == 'B') {
-        if (course == 'A') {
-            scores = getScores(jsonObject, undefined, undefined, 0);
-        }
-        else {
-            scores = getScores(jsonObject, undefined, undefined, 1);
-        }
+    else if (levelWanted.toLowerCase() == 'b') {
+        includeElementary = true;
+        includeMidHig = true;
+        includeA = false;
+        readParameter = true;
     }
-    else {
-        return String(`El curso ${grade} no existe.`);
-    }
-
-    for (let i = 0; i < scores.length; i++) {
-        accrualScores += scores[i];
-    }
-    mean = accrualScores / scores.length;
-    return mean
-}
-
-function getMode(jsonObject, stage, grade, course) {
-    let mode = 0;
-    let modeRepetitions = 0;
-    let currentScore = 0;
-    let currentScoreRepetitons = 0;
-    let scores = [];
-
-    if (grade == undefined && course == undefined) {
-        scores = getScores(jsonObject, stage);
-    }
-    else {
-        if (grade != undefined) {
-            if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
-                scores = getScores(jsonObject, 'primaria', grade);
+    if (readParameter) {
+        let arrayKeys;
+        let arraySubjects;
+        if (includeElementary) {
+            let elementaryJson = jsonObject[0].colegio.primaria[0];
+            let elementaryDictionary = new Map();
+            if (limitOneGrade) {
+                arrayKeys = [levelWanted];
+                elementaryDictionary.set(0, levelWanted);
             }
             else {
-                if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
-                    scores = getScores(jsonObject, 'secundaria', grade);
-                }
-                else {
-                    return String(`El grado ${grade} no existe.`);
-                    scores = getScores(jsonObject, 'secundaria', grade);
+                arrayKeys = Object.keys(elementaryJson);
+                for (let i = 0; i < arrayKeys.length; i++) {
+                    elementaryDictionary.set(i, arrayKeys[i]);
                 }
             }
-        }
-        else {
-            if (course != undefined) {
-                if (course == 'A' || course == 'B') {
-                    if (course == 'A') {
-                        scores = getScores(jsonObject, undefined, undefined, 0);
-                    }
-                    else {
-                        scores = getScores(jsonObject, undefined, undefined, 1);
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (includeA) {
+                    let arrayStudentsA = elementaryJson[elementaryDictionary.get(grade)][0].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        arraySubjects = arrayStudentsA[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].primerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].segundoCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].tercerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].cuartoCorte);
+                        }
                     }
                 }
-                else {
-                    return String(`El curso ${grade} no existe.`);
+                if (includeB) {
+                    let arrayStudentsB = elementaryJson[elementaryDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        arraySubjects = arrayStudentsB[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].primerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].segundoCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].tercerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].cuartoCorte);
+                        }
+                    }
                 }
-            }
-        }
-    }
 
-    currentScore = scores[0];
-    currentScoreRepetitons = 1;
-    for (let i = 1; i < scores.length; i++) {
-        if (scores[i] == currentScore) {
-            currentScoreRepetitons++;
-            if (currentScoreRepetitons > modeRepetitions) {
-                mode = scores[i];
-                modeRepetitions = currentScoreRepetitons;
+            }
+        }
+        if (includeMidHig) {
+            let migHigJson = jsonObject[0].colegio.secundaria[0];
+            let midHigDictionary = new Map();
+            if (limitOneGrade) {
+                arrayKeys = [levelWanted];
+                midHigDictionary.set(0, levelWanted);
+            }
+            else {
+                arrayKeys = Object.keys(migHigJson);
+                for (let i = 0; i < arrayKeys.length; i++) {
+                    midHigDictionary.set(i, arrayKeys[i]);
+                }
+            }
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (includeA) {
+                    let arrayStudentsA = migHigJson[midHigDictionary.get(grade)][0].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        arraySubjects = arrayStudentsA[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].primerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].segundoCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].tercerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].cuartoCorte);
+                        }
+                    }
+                }
+                if (includeB) {
+                    let arrayStudentsB = migHigJson[midHigDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        arraySubjects = arrayStudentsB[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].primerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].segundoCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].tercerCorte);
+                            scores.push(arraySubjects[subjectsIter][currentSubject].cuartoCorte);
+                        }
+                    }
+                }
+            }
+        }
+        scores.sort();
+        return scores;
+    }
+    else {
+        return undefined;
+    }
+}
+
+function getMean(jsonObject, levelWanted) {
+    let scores = getScores(jsonObject, levelWanted);
+    let mean;
+    let accrual = 0;
+    for (let scoresIterator = 0; scoresIterator < scores.length; scoresIterator++) {
+        accrual += scores[scoresIterator];
+    }
+    mean = accrual / scores.length;
+    return mean;
+}
+
+function getMode(jsonObject, levelWanted) {
+    let scores = getScores(jsonObject, levelWanted);
+    let mode;
+    let modeRepetitions = 0;
+    let previousScore = scores[0];
+    let previousRepetitions = 1;
+    for (let scoresIterator = 1; scoresIterator < scores.length; scoresIterator++) {
+        if (previousScore == scores[scoresIterator]) {
+            previousRepetitions++;
+            if (previousRepetitions > modeRepetitions) {
+                mode = previousScore;
+                modeRepetitions = previousRepetitions;
             }
         }
         else {
-            currentScore = scores[i];
-            currentScoreRepetitons = 1;
-            if (currentScoreRepetitons > modeRepetitions) {
-                mode = scores[i];
-                modeRepetitions = currentScoreRepetitons;
-            }
+            previousScore = scores[scoresIterator];
+            previousRepetitions = 1;
         }
     }
     return mode;
 }
 
-function getMedian(jsonObject, stage, grade, course) {
-    let middleIndex = 0;
-    median = 0;
-    if (grade == undefined && course == undefined) {
-        scores = getScores(jsonObject, stage);
+function getMedian(jsonObject, levelWanted) {
+    let scores = getScores(jsonObject, levelWanted);
+    let median;
+    if (scores.length % 2 == 0) {
+        let score1 = scores[(scores.length / 2) - 1];
+        let score2 = scores[(scores.length / 2)];
+        median = (score1 + score2) / 2;
     }
     else {
-        if (grade != undefined) {
-            if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
-                scores = getScores(jsonObject, 'primaria', grade);
-            }
-            else {
-                if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
-                    scores = getScores(jsonObject, 'secundaria', grade);
-                }
-                else {
-                    return String(`El grado ${grade} no existe.`);
-                    scores = getScores(jsonObject, 'secundaria', grade);
-                }
-            }
-        }
-        else {
-            if (course != undefined) {
-                if (course == 'A' || course == 'B') {
-                    if (course == 'A') {
-                        scores = getScores(jsonObject, undefined, undefined, 0);
-                    }
-                    else {
-                        scores = getScores(jsonObject, undefined, undefined, 1);
-                    }
-                }
-                else {
-                    return String(`El curso ${grade} no existe.`);
-                }
-            }
-        }
-    }
-    if (scores.length % 2 == 1) {
-        middleIndex = (scores.length - 1) / 2;
-        median = scores[middleIndex];
-    }
-    else {
-        middleIndex = (scores.length / 2) - 1;
-        median = (scores[middleIndex] + scores[middleIndex + 1]) / 2;
+        median = scores[(scores.length - 1) / 2]
     }
     return median;
 }
-function getMeanScoresBySubject() {
-    let bestScoresBySubject = [];
-    let topStudents = [];
 
-    function calcScore(term1, term2, term3, term4) {
-        let accrual = term1 + term2 + term3 + term4;
-        score = accrual / 4;
-        return score;
+function compareHigherScores(objectSource, studentData, subjectToCheck) {
+    let objectSourceAux = objectSource;
+    let objectTemp = {};
+    if (!((Object.keys(objectSource)).includes(subjectToCheck))) {
+        objectTemp = {
+            'grade': studentData.grade,
+            'course': studentData.course,
+            'name': studentData.name,
+            'score': studentData.score
+        };
+        objectSourceAux[subjectToCheck] = objectTemp;
     }
-    function searchBestScoresBySubject(bestScoresBySubject, subjectSearched) {
-        let subjectIndex = element => element.subject == subjectSearched;
-        let searchedIndex = bestScoresBySubject.findIndex(subjectIndex);
-        if (searchedIndex == undefined) {
-            return -1;
+    else if (studentData.score > objectSource[subjectToCheck]['score']) {
+        objectTemp = {
+            'grade': studentData.grade,
+            'course': studentData.course,
+            'name': studentData.name,
+            'score': studentData.score
         }
-        else {
-            return searchedIndex;
-        }
+        objectSourceAux[subjectToCheck] = objectTemp;
     }
-    function compareScores(bestScoresBySubject, subjectSearched, scoreSearched, sName, sGrade, sCourse) {
-        let indexBest = searchBestScoresBySubject(bestScoresBySubject, subjectSearched);
-        //console.log(indexBest);
-        if (indexBest == -1) {
-            bestScoresBySubject.push({ subject: subjectSearched, score: scoreSearched });
-            topStudents.push({ name: sName, grade: sGrade, course: sCourse, subject: subjectSearched, score: scoreSearched });
-        }
-        else {
-            if (bestScoresBySubject[indexBest].score < scoreSearched) {
-                //console.log(bestScoresBySubject[indexBest].score);
-                bestScoresBySubject[indexBest] = { subject: subjectSearched, score: scoreSearched };
-                topStudents[indexBest] = { name: sName, grade: sGrade, course: sCourse, subject: subjectSearched, score: scoreSearched };
+    return objectSourceAux;
+}
+
+function getHigherScoresBySubject(jsonObject, levelWanted) {
+    let includeElementary = false;
+    let includeMidHig = false;
+    let readParameter = false;
+    let limitOneGrade = false;
+    let includeA = true;
+    let includeB = true;
+    if (levelWanted == 'colegio' || levelWanted == undefined) {
+        includeElementary = true;
+        includeMidHig = true;
+        readParameter = true;
+    }
+    else if (levelWanted == 'primaria') {
+        includeElementary = true;
+        readParameter = true;
+    }
+    else if (levelWanted == 'secundaria') {
+        includeMidHig = true;
+        readParameter = true;
+    }
+    else if (['primero', 'segundo', 'tercero', 'cuarto', 'quinto'].includes(levelWanted)) {
+        includeElementary = true;
+        limitOneGrade = true;
+        readParameter = true;
+    }
+    else if (['sexto', 'septimo', 'octavo', 'noveno', 'decimo', 'once'].includes(levelWanted)) {
+        includeMidHig = true;
+        limitOneGrade = true;
+        readParameter = true;
+    }
+    else if (levelWanted.toLowerCase() == 'a') {
+        includeElementary = true;
+        includeMidHig = true;
+        includeB = false;
+        readParameter = true;
+    }
+    else if (levelWanted.toLowerCase() == 'b') {
+        includeElementary = true;
+        includeMidHig = true;
+        includeA = false;
+        readParameter = true;
+    }
+    if (readParameter) {
+        let arrayKeys;
+        let arraySubjects;
+        let higherScores = {};
+        if (includeElementary) {
+            let elementaryJson = jsonObject[0].colegio.primaria[0];
+            let elementaryDictionary = new Map();
+            if (limitOneGrade) {
+                arrayKeys = [levelWanted];
+                elementaryDictionary.set(0, levelWanted);
+            }
+            else {
+                arrayKeys = Object.keys(elementaryJson);
+                for (let i = 0; i < arrayKeys.length; i++) {
+                    elementaryDictionary.set(i, arrayKeys[i]);
+                }
+            }
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (includeA) {
+                    let currentGrade = elementaryDictionary.get(grade);
+                    let currentCourse = elementaryJson[elementaryDictionary.get(grade)][0].curso;
+                    let arrayStudentsA = elementaryJson[elementaryDictionary.get(grade)][0].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        arraySubjects = arrayStudentsA[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            let studentInformation = {
+                                'grade': currentGrade,
+                                'course': currentCourse,
+                                'name': arrayStudentsA[studentsIter].nombre,
+                                'score': subjectScore
+                            };
+                            higherScores = compareHigherScores(higherScores, studentInformation, currentSubject);
+                        }
+                    }
+                }
+                if (includeB) {
+                    let currentGrade = elementaryDictionary.get(grade);
+                    let currentCourse = elementaryJson[elementaryDictionary.get(grade)][1].curso;
+                    let arrayStudentsB = elementaryJson[elementaryDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        arraySubjects = arrayStudentsB[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            let studentInformation = {
+                                'grade': currentGrade,
+                                'course': currentCourse,
+                                'name': arrayStudentsB[studentsIter].nombre,
+                                'score': subjectScore
+                            };
+                            higherScores = compareHigherScores(higherScores, studentInformation, currentSubject);
+                        }
+                    }
+                }
+
             }
         }
-
-    }
-    let jsonObjectCopy = jsonObject[0].colegio;
-    for (let stages in jsonObjectCopy) {
-        let stage = jsonObjectCopy[stages][0];
-        for (let grades in stage) {
-            let grade = stage[grades];
-            for (let courses in grade) {
-                let course = grade[courses];
-                for (let students in course.estudiantes) {
-                    let student = course.estudiantes[students];
-                    for (let subjects in student.asignaturas) {
-                        let subject = student.asignaturas[subjects];
-                        for (let terms in subject) {
-                            let s1 = subject[terms].primerCorte;
-                            let s2 = subject[terms].segundoCorte;
-                            let s3 = subject[terms].tercerCorte;
-                            let s4 = subject[terms].cuartoCorte;
-                            //console.log(s1);
-                            let score = calcScore(s1, s2, s3, s4);
-                            compareScores(bestScoresBySubject, terms, score, student.nombre, grades, grade[courses].curso)
-
+        if (includeMidHig) {
+            let migHigJson = jsonObject[0].colegio.secundaria[0];
+            let midHigDictionary = new Map();
+            if (limitOneGrade) {
+                arrayKeys = [levelWanted];
+                midHigDictionary.set(0, levelWanted);
+            }
+            else {
+                arrayKeys = Object.keys(migHigJson);
+                for (let i = 0; i < arrayKeys.length; i++) {
+                    midHigDictionary.set(i, arrayKeys[i]);
+                }
+            }
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (includeA) {
+                    let currentGrade = midHigDictionary.get(grade);
+                    let currentCourse = migHigJson[midHigDictionary.get(grade)][0].curso;
+                    let arrayStudentsA = migHigJson[midHigDictionary.get(grade)][0].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        arraySubjects = arrayStudentsA[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            let studentInformation = {
+                                'grade': currentGrade,
+                                'course': currentCourse,
+                                'name': arrayStudentsA[studentsIter].nombre,
+                                'score': subjectScore
+                            };
+                            higherScores = compareHigherScores(higherScores, studentInformation, currentSubject);
+                        }
+                    }
+                }
+                if (includeB) {
+                    let currentGrade = midHigDictionary.get(grade);
+                    let currentCourse = migHigJson[midHigDictionary.get(grade)][1].curso;
+                    let arrayStudentsB = migHigJson[midHigDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        arraySubjects = arrayStudentsB[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            let studentInformation = {
+                                'grade': currentGrade,
+                                'course': currentCourse,
+                                'name': arrayStudentsB[studentsIter].nombre,
+                                'score': subjectScore
+                            };
+                            higherScores = compareHigherScores(higherScores, studentInformation, currentSubject);
                         }
                     }
                 }
             }
         }
-    }
-    console.log(topStudents);
-    return topStudents;
-}
-function showStudent(jsonObject, grade){
-    function getRandom(max){
-        return Math.round(Math.random()*max);
-    }
-
-    if (grade == 'primero' || grade == 'segundo' || grade == 'tercero' || grade == 'cuarto' || grade == 'quinto') {
-        stage = 'primaria';
+        return higherScores;
     }
     else {
-        if (grade == 'sexto' || grade == 'septimo' || grade == 'octavo' || grade == 'noveno' || grade == 'decimo' || grade == 'once') {
-            stage = 'secundaria';
-        }
-        else {
-            return String(`El grado ${grade} no existe.`);
-        }
+        return undefined;
     }
-    let course = getRandom(1);
-    let student = getRandom(jsonObject[0].colegio[stage][0][grade][course].estudiantes.length - 1);
-    
-    return jsonObject[0].colegio[stage][0][grade][course].estudiantes[student];
 }
 
+function compareAvgScore(objectSource, studentData) {
+    let objectTemp = objectSource;
+    if ((Object.keys(objectSource)).length == 0) {
+        objectTemp = studentData;
+    }
+    else if (studentData.score > objectSource.score) {
+        objectTemp = studentData;
+    }
+    return objectTemp;
+}
+
+function getStudentHigherAvgScore(jsonObject, levelWanted) {
+    let includeElementary = false;
+    let includeMidHig = false;
+    let readParameter = false;
+    let limitOneGrade = false;
+    let includeA = true;
+    let includeB = true;
+    if (levelWanted == 'colegio' || levelWanted == undefined) {
+        includeElementary = true;
+        includeMidHig = true;
+        readParameter = true;
+    }
+    else if (levelWanted == 'primaria') {
+        includeElementary = true;
+        readParameter = true;
+    }
+    else if (levelWanted == 'secundaria') {
+        includeMidHig = true;
+        readParameter = true;
+    }
+    else if (['primero', 'segundo', 'tercero', 'cuarto', 'quinto'].includes(levelWanted)) {
+        includeElementary = true;
+        limitOneGrade = true;
+        readParameter = true;
+    }
+    else if (['sexto', 'septimo', 'octavo', 'noveno', 'decimo', 'once'].includes(levelWanted)) {
+        includeMidHig = true;
+        limitOneGrade = true;
+        readParameter = true;
+    }
+    else if (levelWanted.toLowerCase() == 'a') {
+        includeElementary = true;
+        includeMidHig = true;
+        includeB = false;
+        readParameter = true;
+    }
+    else if (levelWanted.toLowerCase() == 'b') {
+        includeElementary = true;
+        includeMidHig = true;
+        includeA = false;
+        readParameter = true;
+    }
+    if (readParameter) {
+        let arrayKeys;
+        let arraySubjects;
+        let higherScore = {};
+        let studentScores = [];
+        let avgScore = 0;
+        if (includeElementary) {
+            let elementaryJson = jsonObject[0].colegio.primaria[0];
+            let elementaryDictionary = new Map();
+            if (limitOneGrade) {
+                arrayKeys = [levelWanted];
+                elementaryDictionary.set(0, levelWanted);
+            }
+            else {
+                arrayKeys = Object.keys(elementaryJson);
+                for (let i = 0; i < arrayKeys.length; i++) {
+                    elementaryDictionary.set(i, arrayKeys[i]);
+                }
+            }
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (includeA) {
+                    let currentGrade = elementaryDictionary.get(grade);
+                    let currentCourse = elementaryJson[elementaryDictionary.get(grade)][0].curso;
+                    let arrayStudentsA = elementaryJson[elementaryDictionary.get(grade)][0].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        studentScores = [];
+                        arraySubjects = arrayStudentsA[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            studentScores.push(subjectScore);
+                        }
+                        let sumScoresSubject = 0;
+                        for (let s = 0; s < studentScores.length; s++) {
+                            sumScoresSubject += studentScores[s];
+                        }
+                        avgScore = sumScoresSubject / studentScores.length;
+                        let studentInformation = {
+                            'grade': currentGrade,
+                            'course': currentCourse,
+                            'name': arrayStudentsA[studentsIter].nombre,
+                            'score': avgScore
+                        };
+                        higherScore = compareAvgScore(higherScore, studentInformation);
+                    }
+                }
+                if (includeB) {
+                    let currentGrade = elementaryDictionary.get(grade);
+                    let currentCourse = elementaryJson[elementaryDictionary.get(grade)][1].curso;
+                    let arrayStudentsB = elementaryJson[elementaryDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        studentScores = [];
+                        arraySubjects = arrayStudentsB[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            studentScores.push(subjectScore);
+                        }
+                        let sumScoresSubject = 0;
+                        for (let s = 0; s < studentScores.length; s++) {
+                            sumScoresSubject += studentScores[s];
+                        }
+                        avgScore = sumScoresSubject / studentScores.length;
+                        let studentInformation = {
+                            'grade': currentGrade,
+                            'course': currentCourse,
+                            'name': arrayStudentsB[studentsIter].nombre,
+                            'score': avgScore
+                        };
+                        higherScore = compareAvgScore(higherScore, studentInformation);
+                    }
+                }
+
+            }
+        }
+        if (includeMidHig) {
+            let migHigJson = jsonObject[0].colegio.secundaria[0];
+            let midHigDictionary = new Map();
+            if (limitOneGrade) {
+                arrayKeys = [levelWanted];
+                midHigDictionary.set(0, levelWanted);
+            }
+            else {
+                arrayKeys = Object.keys(migHigJson);
+                for (let i = 0; i < arrayKeys.length; i++) {
+                    midHigDictionary.set(i, arrayKeys[i]);
+                }
+            }
+            for (let grade = 0; grade < arrayKeys.length; grade++) {
+                if (includeA) {
+                    let currentGrade = midHigDictionary.get(grade);
+                    let currentCourse = migHigJson[midHigDictionary.get(grade)][0].curso;
+                    let arrayStudentsA = migHigJson[midHigDictionary.get(grade)][0].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsA.length; studentsIter++) {
+                        studentScores = [];
+                        arraySubjects = arrayStudentsA[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            studentScores.push(subjectScore);
+                        }
+                        let sumScoresSubject = 0;
+                        for (let s = 0; s < studentScores.length; s++) {
+                            sumScoresSubject += studentScores[s];
+                        }
+                        avgScore = sumScoresSubject / studentScores.length;
+                        let studentInformation = {
+                            'grade': currentGrade,
+                            'course': currentCourse,
+                            'name': arrayStudentsA[studentsIter].nombre,
+                            'score': avgScore
+                        };
+                        higherScore = compareAvgScore(higherScore, studentInformation);
+                    }
+                }
+                if (includeB) {
+                    let currentGrade = midHigDictionary.get(grade);
+                    let currentCourse = migHigJson[midHigDictionary.get(grade)][1].curso;
+                    let arrayStudentsB = migHigJson[midHigDictionary.get(grade)][1].estudiantes;
+                    for (let studentsIter = 0; studentsIter < arrayStudentsB.length; studentsIter++) {
+                        studentScores = [];
+                        arraySubjects = arrayStudentsB[studentsIter].asignaturas;
+                        for (let subjectsIter = 0; subjectsIter < arraySubjects.length; subjectsIter++) {
+                            currentSubject = (Object.keys(arraySubjects[subjectsIter])[0]);
+                            let sumScores = 0;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].primerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].segundoCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].tercerCorte;
+                            sumScores += arraySubjects[subjectsIter][currentSubject].cuartoCorte;
+                            let subjectScore = sumScores / 4;
+                            studentScores.push(subjectScore);
+                        }
+                        let sumScoresSubject = 0;
+                        for (let s = 0; s < studentScores.length; s++) {
+                            sumScoresSubject += studentScores[s];
+                        }
+                        avgScore = sumScoresSubject / studentScores.length;
+                        let studentInformation = {
+                            'grade': currentGrade,
+                            'course': currentCourse,
+                            'name': arrayStudentsB[studentsIter].nombre,
+                            'score': avgScore
+                        };
+                        higherScore = compareAvgScore(higherScore, studentInformation);
+                    }
+                }
+            }
+        }
+        return higherScore;
+    }
+    else {
+        return undefined;
+    }
+}
+
+function getStudentOfGrade(jsonObject, gradeWanted) {
+    let stagesList = ['primaria', 'secundaria'];
+    let gradesElementaryList = ['primero', 'segundo', 'tercero', 'cuarto', 'quinto'];
+    let gradesMidHigList = ['sexto', 'septimo', 'octavo', 'noveno', 'decimo', 'once'];
+    let coursesList = ['A', 'B'];
+    if (gradesElementaryList.includes(gradeWanted) || gradesMidHigList.includes(gradeWanted)) {
+        let currentStage;
+        let currentGrade;
+        let currentCourse;
+
+        if (gradesElementaryList.includes(gradeWanted)) {
+            currentStage = stagesList[0];
+        }
+        else {
+            currentStage = stagesList[1];
+        }
+        currentGrade = gradeWanted;
+        currentCourse = Math.round(Math.random() * (coursesList.length - 1));
+        studentsList = jsonObject[0].colegio[currentStage][0][currentGrade][currentCourse].estudiantes;
+        currentStudent = Math.round(Math.random() * (studentsList.length - 1))
+        let student = {
+            stage: currentStage,
+            grade: currentGrade,
+            course: coursesList[currentCourse],
+            name: studentsList[currentStudent].nombre,
+            gender: studentsList[currentStudent].genero
+        };
+        return student;
+    }
+    else {
+        return undefined;
+    }
+}
+
+console.log(`cantidad total de estudiantes que hay en el colegio: ${countStudents(schoolJson)}`);
+console.log(`cantidad total de estudiantes que hay en el colegio: ${countStudents(schoolJson, 'colegio')}`);
+console.log(`cantidad total de estudiantes que hay en primaria: ${countStudents(schoolJson, 'primaria')}`);
+console.log(`cantidad total de estudiantes que hay en secundaria: ${countStudents(schoolJson, 'secundaria')}`);
+console.log(`cantidad total de estudiantes que hay en secundaria: ${countStudents(schoolJson, 'secundaria', undefined)}`);
+console.log(`cantidad de niños que hay en el colegio: ${countStudents(schoolJson, 'colegio', 'niños')}`);
+console.log(`cantidad de niñas que hay en el colegio: ${countStudents(schoolJson, 'colegio', 'niñas')}`);
+console.log(`cantidad de niños que hay en primaria: ${countStudents(schoolJson, 'primaria', 'niños')}`);
+console.log(`cantidad de niñas que hay en primaria: ${countStudents(schoolJson, 'primaria', 'niñas')}`);
+console.log(`cantidad de niños que hay en secundaria: ${countStudents(schoolJson, 'secundaria', 'niños')}`);
+console.log(`cantidad de niñas que hay en secundaria: ${countStudents(schoolJson, 'secundaria', 'niñas')}`);
+console.log(`\n`);
+console.log(`media de las notas en el colegio: ${getMean(schoolJson)}`);
+console.log(`media de las notas en el colegio: ${getMean(schoolJson, 'colegio')}`);
+console.log(`media de las notas en primaria: ${getMean(schoolJson, 'primaria')}`);
+console.log(`media de las notas en secundaria: ${getMean(schoolJson, 'secundaria')}`);
+console.log(`media de las notas en primero: ${getMean(schoolJson, 'primero')}`);
+console.log(`media de las notas en cursos A: ${getMean(schoolJson, 'A')}`);
+console.log(`\n`);
+console.log(`moda de las notas en el colegio: ${getMode(schoolJson)}`);
+console.log(`moda de las notas en el colegio: ${getMode(schoolJson, 'colegio')}`);
+console.log(`moda de las notas en primaria: ${getMode(schoolJson, 'primaria')}`);
+console.log(`moda de las notas en secundaria: ${getMode(schoolJson, 'secundaria')}`);
+console.log(`moda de las notas en primero: ${getMode(schoolJson, 'primero')}`);
+console.log(`moda de las notas en cursos A: ${getMode(schoolJson, 'A')}`);
+console.log(`\n`);
+console.log(`mediana de las notas en el colegio: ${getMedian(schoolJson)}`);
+console.log(`mediana de las notas en el colegio: ${getMedian(schoolJson, 'colegio')}`);
+console.log(`mediana de las notas en primaria: ${getMedian(schoolJson, 'primaria')}`);
+console.log(`mediana de las notas en secundaria: ${getMedian(schoolJson, 'secundaria')}`);
+console.log(`mediana de las notas en primero: ${getMedian(schoolJson, 'primero')}`);
+console.log(`mediana de las notas en cursos A: ${getMedian(schoolJson, 'A')}`);
+console.log(`\n`);
+console.log(`estudiantes con mejor nota en promedio en cada materia: \n`,getHigherScoresBySubject(schoolJson));
+console.log(`estudiantes con mejor nota en promedio en cada materia: \n`,getHigherScoresBySubject(schoolJson, 'colegio'));
+console.log(`estudiantes de primaria con mejor nota en promedio en cada materia: \n`,getHigherScoresBySubject(schoolJson, 'primaria'));
+console.log(`\n`);
+console.log(`estudiante con mejor nota en promedio en el colegio: \n`,getStudentHigherAvgScore(schoolJson));
+console.log(`estudiante con mejor nota en promedio en el colegio: \n`,getStudentHigherAvgScore(schoolJson, 'colegio'));
+console.log(`estudiante con mejor nota en promedio en primaria: \n`,getStudentHigherAvgScore(schoolJson, 'primaria'));
+console.log(`estudiante con mejor nota en promedio en secundaria: \n`,getStudentHigherAvgScore(schoolJson, 'secundaria'));
+console.log(`estudiante con mejor nota en promedio en primero: \n`,getStudentHigherAvgScore(schoolJson, 'primero'));
+console.log(`estudiante con mejor nota en promedio en cursos B: \n`,getStudentHigherAvgScore(schoolJson, 'b'));
+console.log(`\n`);
+console.log(`seleccion aleatoria de estudiante de grado sexto: \n`,getStudentOfGrade(schoolJson, 'sexto'));
 
 
 
-console.log(`Cantidad de estudiantes que hay en el colegio: ${getTotalStudients(jsonObject)}`);
-console.log(`Cantidad de estudiantes que hay en primaria: ${getTotalStudientsByStage(jsonObject, 'primaria')}`);
-console.log(`Cantidad de estudiantes que hay en secundaria: ${getTotalStudientsByStage(jsonObject, 'secundaria')}`);
-console.log(`Cantidad de niños que hay en el colegio: ${getTotalBoys(jsonObject)}`);
-console.log(`Cantidad de niñas que hay en el colegio: ${getTotalGirls(jsonObject)}`);
-console.log(`Cantidad de niños que hay en primaria: ${getTotalBoysByStage(jsonObject, 'primaria')}`);
-console.log(`Cantidad de niñas que hay en primaria: ${getTotalGirlsByStage(jsonObject, 'primaria')}`);
-console.log(`Cantidad de niños que hay en secundaria: ${getTotalBoysByStage(jsonObject, 'secundaria')}`);
-console.log(`Cantidad de niñas que hay en secundaria: ${getTotalGirlsByStage(jsonObject, 'secundaria')}`);
-console.log(`Media de las notas en el colegio: ${getMean(jsonObject)}`);
-console.log(`Media de las notas en primaria: ${getMean(jsonObject, 'primaria')}`);
-console.log(`Media de las notas en secundaria: ${getMean(jsonObject, 'secundaria')}`);
-console.log(`Media de las notas en grado primero: ${getMeanByGrade(jsonObject, 'primero')}`);
-console.log(`Media de las notas en curso A: ${getMeanByCourse(jsonObject, 'A')}`);
-console.log(`Moda de las notas en el colegio: ${getMode(jsonObject)}`);
-console.log(`Moda de las notas en primaria: ${getMode(jsonObject, 'primaria')}`);
-console.log(`Moda de las notas en secundaria: ${getMode(jsonObject, 'secundaria')}`);
-console.log(`Moda de las notas en en curso primero: ${getMode(jsonObject, undefined, 'primero')}`);
-console.log(`Moda de las notas en en grado A: ${getMode(jsonObject, undefined, undefined, 'A')}`);
-console.log(`Mediana de las notas en el colegio: ${getMedian(jsonObject)}`);
-console.log(`Mediana de las notas en primaria: ${getMedian(jsonObject, 'primaria')}`);
-console.log(`Mediana de las notas en secundaria: ${getMedian(jsonObject, 'secundaria')}`);
-console.log(`Mediana de las notas en en curso x: ${getMedian(jsonObject, undefined, 'primero')}`);
-console.log(`Mediana de las notas en en grado x: ${getMedian(jsonObject, undefined, undefined, 'A')}`);
-console.log(`Estudiantes con mejor nota en promedio en cada materia: `, getMeanScoresBySubject(jsonObject));
-console.log(`Estudiante que pertezca a grado segundo: `, showStudent(jsonObject, 'segundo'));
+/*
+-	La cantidad total de estudiantes que hay en el colegio.
+-	La cantidad total de estudiantes que hay en primaria.
+-	La cantidad total de estudiantes que hay en bachillerato.
+-	La cantidad de niños que hay en el colegio.
+-	La cantidad de niñas que hay en el colegio.
+-	La cantidad de niños que hay en primaria.
+-	La cantidad de niñas que hay en primaria.
+-	La cantidad de niños que hay en bachillerato.
+-	La cantidad de niñas que hay en bachillerato.
+
+-	La media de las notas en el colegio.
+-	La media de las notas en el bachillerato.
+-	La media de las notas en el primaria.
+-	La media de las notas de un grado seleccionado por parametro.
+-	La media de las notas de un curso seleccionado por parametro.
+
+-	La moda de las notas en el colegio.
+-	La moda de las notas en el bachillerato.
+-	La moda de las notas en el primaria.
+-	La moda de las notas de un grado seleccionado por parametro.
+-	La moda de las notas de un curso seleccionado por parametro.
+
+-	La mediana de las notas en el colegio.
+-	La mediana de las notas en el bachillerato.
+-	La mediana de las notas en el primaria.
+-	La mediana de las notas de un grado seleccionado por parametro.
+-	La mediana de las notas de un curso seleccionado por parametro.
+
+-	Seleccionar el estudiante con mejor nota en promedio en cada materia.
+
+-	Seleccionar el estudiante con mejor nota en promedio en el curso.
+-	Seleccionar el estudiante con mejor nota en promedio en el grado.
+-	Seleccionar el estudiante con mejor nota en promedio en primaria.
+-	Seleccionar el estudiante con mejor nota en promedio en bachillerato.
+-	Seleccionar el estudiante con mejor nota en promedio en el colegio.
+
+-	Buscar un estudiante que pertenezca a un grado seleccionado por parametro.
+*/
